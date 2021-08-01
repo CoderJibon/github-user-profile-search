@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
+    <style>
+        .success, .error {
+            color: white;
+            padding: 5px;
+            margin: 5px 0 15px 0;
+        }
+
+        .success {
+            background: green;
+        }
+
+        .error {
+            background: red;
+        }
+        .card {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: .25rem;
+        }
+        .ueserProfile {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 20px;
+        }
+        .card-body {
+            -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+            padding: 1.25rem;
+        }
+        .nav {
+            background-color: green;
+            color: #fff;
+            font-size: 20px;
+        }
+        body{
+            margin: 0;
+            padding: 0;
+            background-color: ;
+        }
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .nav p {
+            margin: 0;
+            padding: 20px 0;
+        }
+        .mid {
+            text-align: center;
+            padding: 100px;
+        }
+        .cont {
+            border: 3px solid rebeccapurple;
+            margin: 50px 0;
+            padding: 20px;
+        }
+        .cont input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        @media only screen and (max-width: 780px){
+            .ueserProfile{
+                grid-template-columns: auto;
+            }
+        }
+    </style>
+    <title>Book List</title>
+</head>
+
+<body>
+ <div class="nav">
+    <div class="container">
+        <p>GitHub Finder</p>
+    </div>
+ </div>
+    <section>
+        <div class="container aalets">
+            <div class="cont">
+                <h1>Search GitHub User</h1>
+                <p>Enter user name to fetch a user profile nad repos</p>
+                <div class="searchArea">
+                    <input id="search" type="text" placeholder=" Search Github User">
+                    <button id="searchBtn" >search</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="ueserProfile">
+                
+            </div>
+        </div>
+    </section>
+    <section> 
+        <div class="container">
+            <div class="mid">
+                <p>GitHub Finder @</p>
+                
+            </div>
+        </div>
+    </section>
+    <script>
+        // javascript opp call
+        class Ui{
+            constructor(){
+             this.User = document.querySelector('.ueserProfile');
+            }
+            userProfile(profile){
+                this.User.innerHTML += `
+                <div class="card">
+                    <img class="card-img-top" src="${profile.avatar_url}" alt="Card image">
+                    <div class="card-body">
+                        <div>
+                            <button><a href="${profile.url}">View Profile</a></button>
+                        </div>
+                      <h4 class="card-title">${profile.name}</h4>
+                      <ul>
+                        <li>User Company : ${profile.company}</li>
+                        <li>User Blog : ${profile.blog}</li>
+                        <li>User Location : ${profile.location}</li>
+                        <li>User Email : ${profile.email}</li>
+                        <li>Bio : ${profile.bio}</li>
+                        <button>public repo:${profile.public_repos}</button>
+                        <button>public gists:${profile.public_gists}</button>
+                        <button>followers:${profile.followers}</button>
+                        <button>following:${profile.following}</button>
+                    </ul>
+                    </div>
+                  </div>
+                `;
+                
+            }
+
+            showAlert(massage,alert){
+                let div = document.createElement('div');
+                div.className = alert;
+
+                let before = document.querySelector('.aalets');
+                let after = document.querySelector('.cont');
+                div.appendChild(document.createTextNode(massage));
+                before.insertBefore(div,after);
+
+               setTimeout(() => {
+                 document.querySelector('.alert').remove();
+               },3000);
+                
+            }
+
+            profileEmpty(){
+                this.User.innerHTML = '';
+            }
+        }
+
+
+        //get ing ui element
+        let searchBtn   = document.querySelector('#searchBtn');
+        let search      = document.querySelector('#search');
+        let ui = new Ui();
+
+       
+        searchBtn.addEventListener('click', () => {
+            let searchValue = search.value;
+            if(searchValue != ""){
+                fetch(`https://api.github.com/users/${searchValue}`)
+                .then(res => res.json())
+                .then(data => {
+                   if(data.message == 'Not Found'){
+                    ui.showAlert('Not Found Try to Again','alert error');
+                    ui.profileEmpty();
+                   }else{
+                    ui.userProfile(data);
+                    ui.showAlert('successfully user profile search','alert success');
+                    
+                   }
+                });
+            }else{
+                ui.showAlert('this is field empty try to Again','alert error');
+                ui.profileEmpty();
+            }
+            search.value = "";
+        });
+
+        
+        
+    </script>
+</body>
+</html>
